@@ -1,0 +1,98 @@
+import Link from 'next/link'
+import { Calendar, Trophy, Users } from 'lucide-react'
+import { Rifa } from '@/lib/supabase/types'
+import { formatCurrency, formatDate } from '@/lib/utils'
+import Badge from '@/components/ui/Badge'
+
+interface RifaCardProps {
+  rifa: Rifa
+  numerosVendidos?: number
+}
+
+export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
+  const progresso = Math.round((numerosVendidos / rifa.total_numeros) * 100)
+
+  const statusVariant = {
+    ativa: 'success',
+    encerrada: 'default',
+    sorteada: 'purple',
+  }[rifa.status] as 'success' | 'default' | 'purple'
+
+  const statusLabel = {
+    ativa: 'Ativa',
+    encerrada: 'Encerrada',
+    sorteada: 'Sorteada',
+  }[rifa.status]
+
+  return (
+    <Link href={`/rifa/${rifa.id}`}>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 active:scale-98">
+        {/* Image */}
+        <div className="relative h-48 bg-gradient-to-br from-violet-500 to-purple-600 overflow-hidden">
+          {rifa.imagem_url ? (
+            <img
+              src={rifa.imagem_url}
+              alt={rifa.titulo}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Trophy size={64} className="text-white/40" />
+            </div>
+          )}
+          <div className="absolute top-3 right-3">
+            <Badge variant={statusVariant}>{statusLabel}</Badge>
+          </div>
+          {rifa.status === 'sorteada' && rifa.numero_sorteado && (
+            <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-1.5">
+              <p className="text-xs text-gray-500">Número sorteado</p>
+              <p className="text-xl font-black text-violet-600">
+                {String(rifa.numero_sorteado).padStart(String(rifa.total_numeros).length, '0')}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          <h3 className="font-bold text-gray-900 text-base leading-tight mb-1">{rifa.titulo}</h3>
+          {rifa.descricao && (
+            <p className="text-sm text-gray-500 mb-3 line-clamp-2">{rifa.descricao}</p>
+          )}
+
+          <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+            <span className="flex items-center gap-1">
+              <Calendar size={12} />
+              {formatDate(rifa.data_sorteio)}
+            </span>
+            <span className="flex items-center gap-1">
+              <Users size={12} />
+              {numerosVendidos}/{rifa.total_numeros}
+            </span>
+          </div>
+
+          {/* Progress */}
+          <div className="mb-3">
+            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all"
+                style={{ width: `${progresso}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-400 mt-1">{progresso}% vendido</p>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-gray-500">Número por</p>
+              <p className="text-lg font-black text-violet-600">{formatCurrency(rifa.preco_numero)}</p>
+            </div>
+            <div className="bg-violet-600 text-white text-sm font-semibold px-4 py-2 rounded-xl">
+              Participar
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
