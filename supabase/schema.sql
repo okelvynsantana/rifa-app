@@ -14,9 +14,13 @@ CREATE TABLE IF NOT EXISTS rifas (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   titulo TEXT NOT NULL,
   descricao TEXT,
+  regras TEXT,
   imagem_url TEXT,
+  imagem_premio_url TEXT,
   total_numeros INTEGER NOT NULL DEFAULT 100,
   preco_numero DECIMAL(10,2) NOT NULL,
+  preco_promocional DECIMAL(10,2),
+  min_numeros_promocao INTEGER DEFAULT 2,
   data_sorteio DATE NOT NULL,
   premio TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'ativa' CHECK (status IN ('ativa', 'encerrada', 'sorteada')),
@@ -69,6 +73,14 @@ CREATE TABLE IF NOT EXISTS admin_users (
   nome TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- =============================================
+-- MIGRATION (run if table already exists)
+-- =============================================
+-- ALTER TABLE rifas ADD COLUMN IF NOT EXISTS regras TEXT;
+-- ALTER TABLE rifas ADD COLUMN IF NOT EXISTS imagem_premio_url TEXT;
+-- ALTER TABLE rifas ADD COLUMN IF NOT EXISTS preco_promocional DECIMAL(10,2);
+-- ALTER TABLE rifas ADD COLUMN IF NOT EXISTS min_numeros_promocao INTEGER DEFAULT 2;
 
 -- =============================================
 -- INDEXES

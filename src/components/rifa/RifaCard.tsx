@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Calendar, Trophy, Users } from 'lucide-react'
+import { Calendar, Trophy, Users, Tag } from 'lucide-react'
 import { Rifa } from '@/lib/supabase/types'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import Badge from '@/components/ui/Badge'
@@ -11,6 +11,10 @@ interface RifaCardProps {
 
 export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
   const progresso = Math.round((numerosVendidos / rifa.total_numeros) * 100)
+  const temPromocao = !!(rifa.preco_promocional && rifa.min_numeros_promocao)
+  const desconto = temPromocao
+    ? Math.round((1 - rifa.preco_promocional! / rifa.preco_numero) * 100)
+    : 0
 
   const statusVariant = {
     ativa: 'success',
@@ -24,24 +28,28 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
     sorteada: 'Sorteada',
   }[rifa.status]
 
+  const coverImage = rifa.imagem_url || rifa.imagem_premio_url
+
   return (
     <Link href={`/rifa/${rifa.id}`}>
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 active:scale-98">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 active:scale-[0.98]">
         {/* Image */}
         <div className="relative h-48 bg-gradient-to-br from-violet-500 to-purple-600 overflow-hidden">
-          {rifa.imagem_url ? (
-            <img
-              src={rifa.imagem_url}
-              alt={rifa.titulo}
-              className="w-full h-full object-cover"
-            />
+          {coverImage ? (
+            <img src={coverImage} alt={rifa.titulo} className="w-full h-full object-cover" />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <Trophy size={64} className="text-white/40" />
             </div>
           )}
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
             <Badge variant={statusVariant}>{statusLabel}</Badge>
+            {temPromocao && rifa.status === 'ativa' && (
+              <span className="flex items-center gap-1 bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
+                <Tag size={10} />
+                -{desconto}% promo
+              </span>
+            )}
           </div>
           {rifa.status === 'sorteada' && rifa.numero_sorteado && (
             <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-1.5">
@@ -85,7 +93,14 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-gray-500">Número por</p>
-              <p className="text-lg font-black text-violet-600">{formatCurrency(rifa.preco_numero)}</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-black text-violet-600">{formatCurrency(rifa.preco_numero)}</p>
+                {temPromocao && (
+                  <p className="text-xs text-emerald-600 font-semibold">
+                    ou {formatCurrency(rifa.preco_promocional!)} c/ {rifa.min_numeros_promocao}+
+                  </p>
+                )}
+              </div>
             </div>
             <div className="bg-violet-600 text-white text-sm font-semibold px-4 py-2 rounded-xl">
               Participar

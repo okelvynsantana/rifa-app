@@ -14,9 +14,13 @@ export type Database = {
           id: string
           titulo: string
           descricao: string | null
+          regras: string | null
           imagem_url: string | null
+          imagem_premio_url: string | null
           total_numeros: number
           preco_numero: number
+          preco_promocional: number | null
+          min_numeros_promocao: number | null
           data_sorteio: string
           premio: string
           status: 'ativa' | 'encerrada' | 'sorteada'
@@ -31,9 +35,13 @@ export type Database = {
           id?: string
           titulo: string
           descricao?: string | null
+          regras?: string | null
           imagem_url?: string | null
+          imagem_premio_url?: string | null
           total_numeros?: number
           preco_numero: number
+          preco_promocional?: number | null
+          min_numeros_promocao?: number | null
           data_sorteio: string
           premio: string
           status?: 'ativa' | 'encerrada' | 'sorteada'
@@ -48,9 +56,13 @@ export type Database = {
           id?: string
           titulo?: string
           descricao?: string | null
+          regras?: string | null
           imagem_url?: string | null
+          imagem_premio_url?: string | null
           total_numeros?: number
           preco_numero?: number
+          preco_promocional?: number | null
+          min_numeros_promocao?: number | null
           data_sorteio?: string
           premio?: string
           status?: 'ativa' | 'encerrada' | 'sorteada'
