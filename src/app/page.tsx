@@ -35,7 +35,7 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-red-600 via-red-600 to-red-700 text-white">
+      <div className="bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
         <div className="max-w-lg mx-auto px-4 pt-8 pb-12">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">

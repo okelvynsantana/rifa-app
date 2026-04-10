@@ -60,7 +60,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header image */}
-      <div className="relative h-64 bg-gradient-to-br from-red-500 to-red-600">
+      <div className="relative h-64 bg-gradient-to-br from-red-600 to-red-900">
         {rifa.imagem_url && (
           <img src={rifa.imagem_url} alt={rifa.titulo} className="w-full h-full object-cover" />
         )}
@@ -85,7 +85,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
       <div className="max-w-lg mx-auto px-4 pb-36">
         {/* Sorteio result banner */}
         {rifa.status === 'sorteada' && rifa.numero_sorteado && (
-          <div className="bg-gradient-to-r from-red-600 to-red-600 rounded-2xl p-5 mt-4 text-white">
+          <div className="bg-gradient-to-r from-red-700 to-red-900 rounded-2xl p-5 mt-4 text-white">
             <p className="text-red-200 text-sm font-medium">🏆 Número Sorteado</p>
             <p className="text-5xl font-black mt-1">
               {String(rifa.numero_sorteado).padStart(digits, '0')}
@@ -117,7 +117,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
             <p className="font-bold text-gray-900">{vendidos}/{rifa.total_numeros}</p>
             <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-red-500 to-red-500 rounded-full transition-all"
+                className="h-full bg-gradient-to-r from-red-500 to-red-700 rounded-full transition-all"
                 style={{ width: `${progresso}%` }}
               />
             </div>

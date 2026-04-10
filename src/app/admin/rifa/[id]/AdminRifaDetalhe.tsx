@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, DollarSign, CheckCircle, XCircle,
   ExternalLink, Trophy, Calendar, Hash, Eye, EyeOff,
-  RefreshCw, PlusCircle, X as XIcon,
+  RefreshCw, PlusCircle, X as XIcon, Pencil,
 } from 'lucide-react'
 import Link from 'next/link'
 import Modal from '@/components/ui/Modal'
@@ -316,7 +316,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
         </div>
 
         <div className="h-2 bg-gray-100 rounded-full mb-3 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-red-500 to-red-500 rounded-full" style={{ width: `${progresso}%` }} />
+          <div className="h-full bg-gradient-to-r from-red-500 to-red-700 rounded-full" style={{ width: `${progresso}%` }} />
         </div>
 
         <div className="grid grid-cols-4 gap-2 text-center mb-4">
@@ -334,7 +334,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
         </div>
 
         {rifa.status === 'sorteada' && rifa.numero_sorteado && (
-          <div className="bg-gradient-to-r from-red-600 to-red-600 rounded-xl p-3 text-white mb-3">
+          <div className="bg-gradient-to-r from-red-700 to-red-900 rounded-xl p-3 text-white mb-3">
             <p className="text-red-200 text-xs">🏆 Número Sorteado</p>
             <p className="text-3xl font-black">{String(rifa.numero_sorteado).padStart(digits, '0')}</p>
             {rifa.resultado_federal && <p className="text-red-200 text-xs mt-1">Federal: {rifa.resultado_federal}</p>}
@@ -589,6 +589,12 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
       {/* Tab: Config */}
       {tab === 'config' && (
         <div className="space-y-3">
+          <Link href={`/admin/rifa/${rifa.id}/editar`}>
+            <Button variant="outline" size="sm" className="w-full">
+              <Pencil size={14} className="mr-2" /> Editar informações da rifa
+            </Button>
+          </Link>
+
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50">
             {[
               { icon: Hash, label: 'Total de números', value: rifa.total_numeros },
