@@ -60,7 +60,7 @@ export function getStatusColor(status: string): string {
     cancelado: 'bg-red-500',
     ativa: 'bg-emerald-500',
     encerrada: 'bg-gray-500',
-    sorteada: 'bg-purple-500',
+    sorteada: 'bg-red-500',
     pendente: 'bg-amber-500',
     comprovante_enviado: 'bg-blue-500',
     confirmado: 'bg-emerald-500',

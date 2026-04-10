@@ -60,7 +60,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header image */}
-      <div className="relative h-64 bg-gradient-to-br from-violet-500 to-purple-600">
+      <div className="relative h-64 bg-gradient-to-br from-red-500 to-red-600">
         {rifa.imagem_url && (
           <img src={rifa.imagem_url} alt={rifa.titulo} className="w-full h-full object-cover" />
         )}
@@ -85,13 +85,13 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
       <div className="max-w-lg mx-auto px-4 pb-36">
         {/* Sorteio result banner */}
         {rifa.status === 'sorteada' && rifa.numero_sorteado && (
-          <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-2xl p-5 mt-4 text-white">
-            <p className="text-violet-200 text-sm font-medium">🏆 Número Sorteado</p>
+          <div className="bg-gradient-to-r from-red-600 to-red-600 rounded-2xl p-5 mt-4 text-white">
+            <p className="text-red-200 text-sm font-medium">🏆 Número Sorteado</p>
             <p className="text-5xl font-black mt-1">
               {String(rifa.numero_sorteado).padStart(digits, '0')}
             </p>
             {rifa.resultado_federal && (
-              <p className="text-violet-200 text-xs mt-2">
+              <p className="text-red-200 text-xs mt-2">
                 Resultado Federal: {rifa.resultado_federal}
               </p>
             )}
@@ -117,19 +117,19 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
             <p className="font-bold text-gray-900">{vendidos}/{rifa.total_numeros}</p>
             <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all"
+                className="h-full bg-gradient-to-r from-red-500 to-red-500 rounded-full transition-all"
                 style={{ width: `${progresso}%` }}
               />
             </div>
           </div>
 
-          <div className="bg-violet-50 rounded-2xl p-3.5 border border-violet-100 shadow-sm col-span-2">
-            <div className="flex items-center gap-2 text-violet-500 text-xs mb-1">
+          <div className="bg-red-50 rounded-2xl p-3.5 border border-red-100 shadow-sm col-span-2">
+            <div className="flex items-center gap-2 text-red-500 text-xs mb-1">
               <Zap size={14} />
               Preço por número
             </div>
             <div className="flex items-end gap-3">
-              <p className="font-black text-violet-700 text-2xl">{formatCurrency(rifa.preco_numero)}</p>
+              <p className="font-black text-red-700 text-2xl">{formatCurrency(rifa.preco_numero)}</p>
               {temPromocao && (
                 <div className="mb-0.5">
                   <span className="bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
@@ -162,7 +162,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
         {rifa.imagem_premio_url && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-4 overflow-hidden">
             <div className="flex items-center gap-2 px-4 pt-3 pb-2">
-              <Trophy size={16} className="text-violet-600" />
+              <Trophy size={16} className="text-red-600" />
               <h3 className="font-bold text-gray-900 text-sm">{rifa.premio}</h3>
             </div>
             <img
@@ -177,7 +177,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
         {rifa.descricao && !rifa.imagem_premio_url && (
           <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <Trophy size={15} className="text-violet-600" />
+              <Trophy size={15} className="text-red-600" />
               <h3 className="font-bold text-gray-900 text-sm">{rifa.premio}</h3>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">{rifa.descricao}</p>
@@ -192,7 +192,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
               className="w-full flex items-center justify-between p-4 text-left"
             >
               <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="text-violet-600" />
+                <ShieldCheck size={16} className="text-red-600" />
                 <span className="font-bold text-gray-900 text-sm">Regras de participação</span>
               </div>
               {showRegras ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
@@ -216,7 +216,7 @@ export default function RifaDetalhe({ rifa, numeros }: Props) {
                 <div className="flex gap-2">
                   <button
                     onClick={sortearAleatorio}
-                    className="flex items-center gap-1 text-xs text-violet-600 font-semibold bg-violet-50 px-3 py-1.5 rounded-lg hover:bg-violet-100 transition-colors"
+                    className="flex items-center gap-1 text-xs text-red-600 font-semibold bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors"
                   >
                     <Shuffle size={12} />
                     Aleatório

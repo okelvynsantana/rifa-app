@@ -159,7 +159,7 @@ export default function NovaRifaPage() {
         {/* Imagem de capa */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
           <h2 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-            <ImageIcon size={16} className="text-violet-600" />
+            <ImageIcon size={16} className="text-red-600" />
             Imagem de Capa
           </h2>
           <ImageUploader
@@ -180,7 +180,7 @@ export default function NovaRifaPage() {
         {/* Prêmio */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
           <h2 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-            <Trophy size={16} className="text-violet-600" />
+            <Trophy size={16} className="text-red-600" />
             Prêmio
           </h2>
           <Input label="Nome do prêmio *" placeholder="Ex: iPhone 16 Pro 256GB Titânio Natural" value={form.premio} onChange={(e) => update('premio', e.target.value)} error={errors.premio} />
@@ -237,13 +237,13 @@ export default function NovaRifaPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-              <Tag size={16} className="text-violet-600" />
+              <Tag size={16} className="text-red-600" />
               Promoção por quantidade
             </h2>
             <button
               type="button"
               onClick={() => setPromocaoAtiva(!promocaoAtiva)}
-              className={`relative w-11 h-6 rounded-full transition-colors ${promocaoAtiva ? 'bg-violet-600' : 'bg-gray-200'}`}
+              className={`relative w-11 h-6 rounded-full transition-colors ${promocaoAtiva ? 'bg-red-600' : 'bg-gray-200'}`}
             >
               <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${promocaoAtiva ? 'translate-x-5' : ''}`} />
             </button>
@@ -342,7 +342,7 @@ function ImageUploader({
 }) {
   return (
     <label className="block cursor-pointer">
-      <div className={`relative border-2 border-dashed rounded-xl overflow-hidden transition-colors ${preview ? 'border-violet-300' : 'border-gray-200 hover:border-violet-300'}`}>
+      <div className={`relative border-2 border-dashed rounded-xl overflow-hidden transition-colors ${preview ? 'border-red-300' : 'border-gray-200 hover:border-red-300'}`}>
         {preview ? (
           <>
             <img src={preview} alt="Preview" className={`w-full ${height} object-cover`} />
@@ -383,7 +383,7 @@ function Textarea({
     <div>
       <label className="block text-sm font-semibold text-gray-700 mb-1.5">{label}</label>
       <textarea
-        className="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-violet-500 focus:outline-none text-gray-900 placeholder-gray-400 resize-none"
+        className="w-full px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-red-500 focus:outline-none text-gray-900 placeholder-gray-400 resize-none"
         rows={rows}
         placeholder={placeholder}
         value={value}

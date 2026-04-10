@@ -37,19 +37,19 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-red-600 via-red-600 to-red-700 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
             <Ticket size={32} className="text-white" />
           </div>
           <h1 className="text-2xl font-black text-white">RifaApp</h1>
-          <p className="text-violet-200 text-sm mt-1">Painel Administrativo</p>
+          <p className="text-red-200 text-sm mt-1">Painel Administrativo</p>
         </div>
 
         <div className="bg-white rounded-3xl shadow-2xl p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Lock size={18} className="text-violet-600" />
+            <Lock size={18} className="text-red-600" />
             <h2 className="font-bold text-gray-900">Entrar</h2>
           </div>
 

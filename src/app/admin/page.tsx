@@ -48,7 +48,7 @@ export default async function AdminDashboard() {
         <h1 className="text-2xl font-black text-gray-900">Dashboard</h1>
         <Link
           href="/admin/nova-rifa"
-          className="flex items-center gap-1.5 bg-violet-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-violet-700 transition-colors"
+          className="flex items-center gap-1.5 bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors"
         >
           <Plus size={16} />
           Nova Rifa
@@ -58,7 +58,7 @@ export default async function AdminDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
         {[
-          { icon: Ticket, label: 'Rifas Ativas', value: rifas.filter((r) => r.status === 'ativa').length, color: 'text-violet-600', bg: 'bg-violet-50' },
+          { icon: Ticket, label: 'Rifas Ativas', value: rifas.filter((r) => r.status === 'ativa').length, color: 'text-red-600', bg: 'bg-red-50' },
           { icon: Users, label: 'Pedidos Hoje', value: pedidos.filter((p) => p.created_at.startsWith(new Date().toISOString().split('T')[0])).length, color: 'text-blue-600', bg: 'bg-blue-50' },
           { icon: DollarSign, label: 'Arrecadado', value: formatCurrency(totalArrecadado), color: 'text-emerald-600', bg: 'bg-emerald-50' },
           { icon: TrendingUp, label: 'Pendente', value: formatCurrency(totalPendente), color: 'text-amber-600', bg: 'bg-amber-50' },
@@ -80,7 +80,7 @@ export default async function AdminDashboard() {
           <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
             <Ticket size={40} className="mx-auto text-gray-300 mb-3" />
             <p className="text-gray-500 text-sm">Nenhuma rifa criada</p>
-            <Link href="/admin/nova-rifa" className="text-violet-600 text-sm font-semibold mt-2 inline-block">
+            <Link href="/admin/nova-rifa" className="text-red-600 text-sm font-semibold mt-2 inline-block">
               Criar primeira rifa →
             </Link>
           </div>
