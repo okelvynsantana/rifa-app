@@ -316,7 +316,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
         </div>
 
         <div className="h-2 bg-gray-100 rounded-full mb-3 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full" style={{ width: `${progresso}%` }} />
+          <div className="h-full bg-gradient-to-r from-red-500 to-red-500 rounded-full" style={{ width: `${progresso}%` }} />
         </div>
 
         <div className="grid grid-cols-4 gap-2 text-center mb-4">
@@ -324,7 +324,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
             { label: 'Pagos', value: vendidos, color: 'text-blue-600' },
             { label: 'Reservados', value: reservados, color: 'text-amber-600' },
             { label: 'Livres', value: disponiveis, color: 'text-emerald-600' },
-            { label: 'Arrecadado', value: formatCurrency(arrecadado), color: 'text-violet-600' },
+            { label: 'Arrecadado', value: formatCurrency(arrecadado), color: 'text-red-600' },
           ].map((s) => (
             <div key={s.label}>
               <p className={`font-black text-sm ${s.color}`}>{s.value}</p>
@@ -334,10 +334,10 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
         </div>
 
         {rifa.status === 'sorteada' && rifa.numero_sorteado && (
-          <div className="bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl p-3 text-white mb-3">
-            <p className="text-violet-200 text-xs">🏆 Número Sorteado</p>
+          <div className="bg-gradient-to-r from-red-600 to-red-600 rounded-xl p-3 text-white mb-3">
+            <p className="text-red-200 text-xs">🏆 Número Sorteado</p>
             <p className="text-3xl font-black">{String(rifa.numero_sorteado).padStart(digits, '0')}</p>
-            {rifa.resultado_federal && <p className="text-violet-200 text-xs mt-1">Federal: {rifa.resultado_federal}</p>}
+            {rifa.resultado_federal && <p className="text-red-200 text-xs mt-1">Federal: {rifa.resultado_federal}</p>}
           </div>
         )}
 
@@ -382,7 +382,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
                 key={s}
                 onClick={() => setFiltroStatus(s)}
                 className={`flex-shrink-0 px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
-                  filtroStatus === s ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  filtroStatus === s ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 {s === 'todos' ? 'Todos' :
@@ -414,17 +414,17 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
 
                   <div className="flex flex-wrap gap-1 mb-2">
                     {pedido.numeros.slice(0, 15).map((n) => (
-                      <span key={n} className="bg-violet-100 text-violet-700 text-xs font-bold px-1.5 py-0.5 rounded">
+                      <span key={n} className="bg-red-100 text-red-700 text-xs font-bold px-1.5 py-0.5 rounded">
                         {String(n).padStart(digits, '0')}
                       </span>
                     ))}
                     {pedido.numeros.length > 15 && (
-                      <span className="text-violet-600 text-xs font-semibold">+{pedido.numeros.length - 15}</span>
+                      <span className="text-red-600 text-xs font-semibold">+{pedido.numeros.length - 15}</span>
                     )}
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <p className="font-black text-violet-700">{formatCurrency(pedido.valor_total)}</p>
+                    <p className="font-black text-red-700">{formatCurrency(pedido.valor_total)}</p>
                     <div className="flex gap-2">
                       {pedido.comprovante_url && (
                         <a
@@ -471,7 +471,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowNums(!showNums)}
-                className="flex items-center gap-1 text-xs text-violet-600 font-semibold"
+                className="flex items-center gap-1 text-xs text-red-600 font-semibold"
               >
                 {showNums ? <EyeOff size={14} /> : <Eye size={14} />}
                 {showNums ? 'Ocultar' : 'Mostrar grid'}
@@ -482,7 +482,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
                   className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors ${
                     modoReserva
                       ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                      : 'bg-violet-100 text-violet-600 hover:bg-violet-200'
+                      : 'bg-red-100 text-red-600 hover:bg-red-200'
                   }`}
                 >
                   {modoReserva ? <><XIcon size={13} /> Cancelar</> : <><PlusCircle size={13} /> Reservar</>}
@@ -492,7 +492,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
           </div>
 
           {modoReserva && (
-            <div className="bg-violet-50 border border-violet-200 rounded-xl p-3 text-sm text-violet-700">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
               Toque nos números <strong>disponíveis</strong> para selecioná-los. Depois clique em &ldquo;Reservar selecionados&rdquo;.
             </div>
           )}
@@ -522,7 +522,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
                       onClick={() => handleNumeroClick(n)}
                       className={`aspect-square rounded text-xs font-bold flex items-center justify-center transition-all ${
                         isSel
-                          ? 'bg-violet-600 text-white scale-105'
+                          ? 'bg-red-600 text-white scale-105'
                           : n.status === 'pago'
                           ? 'bg-blue-500 text-white'
                           : n.status === 'reservado'
@@ -530,8 +530,8 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
                           : n.status === 'cancelado'
                           ? 'bg-red-200 text-red-700'
                           : modoReserva
-                          ? 'bg-gray-100 text-gray-600 hover:bg-violet-100 cursor-pointer'
-                          : 'bg-gray-100 text-gray-600 hover:bg-violet-100'
+                          ? 'bg-gray-100 text-gray-600 hover:bg-red-100 cursor-pointer'
+                          : 'bg-gray-100 text-gray-600 hover:bg-red-100'
                       }`}
                     >
                       {String(n.numero).padStart(digits, '0')}
@@ -544,14 +544,14 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
 
           {/* Action bar when numbers selected */}
           {modoReserva && selecionados.size > 0 && (
-            <div className="bg-violet-600 rounded-2xl p-4 flex items-center justify-between">
+            <div className="bg-red-600 rounded-2xl p-4 flex items-center justify-between">
               <div>
                 <p className="text-white font-bold">{selecionados.size} número(s) selecionado(s)</p>
-                <p className="text-violet-200 text-xs">{formatCurrency(selecionados.size * precoReserva)}</p>
+                <p className="text-red-200 text-xs">{formatCurrency(selecionados.size * precoReserva)}</p>
               </div>
               <Button
                 size="sm"
-                className="bg-white text-violet-700 hover:bg-violet-50"
+                className="bg-white text-red-700 hover:bg-red-50"
                 onClick={() => setModalReserva(true)}
               >
                 Reservar selecionados
@@ -597,8 +597,8 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
               { icon: Trophy, label: 'Prêmio', value: rifa.premio },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-3 p-4">
-                <div className="w-8 h-8 bg-violet-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <item.icon size={15} className="text-violet-600" />
+                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <item.icon size={15} className="text-red-600" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">{item.label}</p>
@@ -630,9 +630,9 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
             hint="Os 2 últimos dígitos determinam o número sorteado"
           />
           {resultadoFederal && (
-            <div className="bg-violet-50 rounded-xl p-3">
-              <p className="text-xs text-violet-600">Número que será sorteado:</p>
-              <p className="text-3xl font-black text-violet-700">
+            <div className="bg-red-50 rounded-xl p-3">
+              <p className="text-xs text-red-600">Número que será sorteado:</p>
+              <p className="text-3xl font-black text-red-700">
                 {(() => {
                   const ultimos = resultadoFederal.replace(/\D/g, '').slice(-2)
                   let n = parseInt(ultimos, 10) % rifa.total_numeros
@@ -656,18 +656,18 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
       {/* Modal Reserva Admin */}
       <Modal isOpen={modalReserva} title={`Reservar ${selecionados.size} número(s)`} onClose={() => setModalReserva(false)}>
         <div className="p-5 space-y-4">
-          <div className="bg-violet-50 rounded-xl p-3">
+          <div className="bg-red-50 rounded-xl p-3">
             <div className="flex flex-wrap gap-1">
               {Array.from(selecionados).sort((a, b) => a - b).slice(0, 20).map((n) => (
-                <span key={n} className="bg-violet-200 text-violet-800 text-xs font-bold px-1.5 py-0.5 rounded">
+                <span key={n} className="bg-red-200 text-red-800 text-xs font-bold px-1.5 py-0.5 rounded">
                   {String(n).padStart(digits, '0')}
                 </span>
               ))}
               {selecionados.size > 20 && (
-                <span className="text-violet-600 text-xs font-semibold">+{selecionados.size - 20}</span>
+                <span className="text-red-600 text-xs font-semibold">+{selecionados.size - 20}</span>
               )}
             </div>
-            <p className="text-violet-700 font-black text-sm mt-2">
+            <p className="text-red-700 font-black text-sm mt-2">
               Total: {formatCurrency(selecionados.size * precoReserva)}
               {rifa.preco_promocional && rifa.min_numeros_promocao && selecionados.size >= rifa.min_numeros_promocao && (
                 <span className="ml-1 text-xs font-semibold text-emerald-600">(preço promocional)</span>

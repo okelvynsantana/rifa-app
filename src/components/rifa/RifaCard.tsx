@@ -34,7 +34,7 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
     <Link href={`/rifa/${rifa.id}`}>
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 active:scale-[0.98]">
         {/* Image */}
-        <div className="relative h-48 bg-gradient-to-br from-violet-500 to-purple-600 overflow-hidden">
+        <div className="relative h-48 bg-gradient-to-br from-red-500 to-red-600 overflow-hidden">
           {coverImage ? (
             <img src={coverImage} alt={rifa.titulo} className="w-full h-full object-cover" />
           ) : (
@@ -54,7 +54,7 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
           {rifa.status === 'sorteada' && rifa.numero_sorteado && (
             <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm rounded-xl px-3 py-1.5">
               <p className="text-xs text-gray-500">Número sorteado</p>
-              <p className="text-xl font-black text-violet-600">
+              <p className="text-xl font-black text-red-600">
                 {String(rifa.numero_sorteado).padStart(String(rifa.total_numeros).length, '0')}
               </p>
             </div>
@@ -83,7 +83,7 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
           <div className="mb-3">
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all"
+                className="h-full bg-gradient-to-r from-red-500 to-red-500 rounded-full transition-all"
                 style={{ width: `${progresso}%` }}
               />
             </div>
@@ -94,7 +94,7 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
             <div>
               <p className="text-xs text-gray-500">Número por</p>
               <div className="flex items-baseline gap-2">
-                <p className="text-lg font-black text-violet-600">{formatCurrency(rifa.preco_numero)}</p>
+                <p className="text-lg font-black text-red-600">{formatCurrency(rifa.preco_numero)}</p>
                 {temPromocao && (
                   <p className="text-xs text-emerald-600 font-semibold">
                     ou {formatCurrency(rifa.preco_promocional!)} c/ {rifa.min_numeros_promocao}+
@@ -102,7 +102,7 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
                 )}
               </div>
             </div>
-            <div className="bg-violet-600 text-white text-sm font-semibold px-4 py-2 rounded-xl">
+            <div className="bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-xl">
               Participar
             </div>
           </div>

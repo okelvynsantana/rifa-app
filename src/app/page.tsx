@@ -35,7 +35,7 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white">
+      <div className="bg-gradient-to-br from-red-600 via-red-600 to-red-700 text-white">
         <div className="max-w-lg mx-auto px-4 pt-8 pb-12">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
@@ -43,12 +43,12 @@ export default async function HomePage() {
             </div>
             <div>
               <h1 className="text-2xl font-black">RifaApp</h1>
-              <p className="text-violet-200 text-sm">Rifas online seguras e transparentes</p>
+              <p className="text-red-200 text-sm">Rifas online seguras e transparentes</p>
             </div>
           </div>
 
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-            <p className="text-sm text-violet-100">
+            <p className="text-sm text-red-100">
               🎯 Resultados baseados na <strong>Loteria Federal</strong> — 100% transparente e verificável
             </p>
           </div>
@@ -64,7 +64,7 @@ export default async function HomePage() {
             { label: 'Transparente', value: '100%' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white rounded-2xl p-3 text-center shadow-sm border border-gray-100">
-              <p className="text-xl font-black text-violet-600">{stat.value}</p>
+              <p className="text-xl font-black text-red-600">{stat.value}</p>
               <p className="text-xs text-gray-500 leading-tight">{stat.label}</p>
             </div>
           ))}

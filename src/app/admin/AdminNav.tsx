@@ -21,7 +21,7 @@ export default function AdminNav() {
     <header className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-violet-600 rounded-xl flex items-center justify-center">
+          <div className="w-8 h-8 bg-red-600 rounded-xl flex items-center justify-center">
             <Ticket size={16} className="text-white" />
           </div>
           <span className="font-bold text-gray-900">Admin</span>
@@ -33,7 +33,7 @@ export default function AdminNav() {
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-colors',
               pathname === '/admin'
-                ? 'bg-violet-50 text-violet-600'
+                ? 'bg-red-50 text-red-600'
                 : 'text-gray-600 hover:bg-gray-50'
             )}
           >
@@ -45,7 +45,7 @@ export default function AdminNav() {
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-colors',
               pathname === '/admin/nova-rifa'
-                ? 'bg-violet-50 text-violet-600'
+                ? 'bg-red-50 text-red-600'
                 : 'text-gray-600 hover:bg-gray-50'
             )}
           >

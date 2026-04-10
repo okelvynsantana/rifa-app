@@ -17,7 +17,7 @@ export default function Badge({ children, variant = 'default', className }: Badg
           'bg-amber-100 text-amber-700': variant === 'warning',
           'bg-red-100 text-red-700': variant === 'danger',
           'bg-blue-100 text-blue-700': variant === 'info',
-          'bg-violet-100 text-violet-700': variant === 'purple',
+          'bg-rose-100 text-rose-700': variant === 'purple',
         },
         className
       )}

@@ -184,10 +184,10 @@ export default function ModalCompra({ rifa, numerosSelecionados, onClose, onSucc
             const isCurrent = currentIdx === thisIdx
             return (
               <div key={s} className="flex items-center gap-2 flex-1">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${isCurrent ? 'bg-violet-600 text-white' : isPast ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-400'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${isCurrent ? 'bg-red-600 text-white' : isPast ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-400'}`}>
                   {i + 1}
                 </div>
-                {i < 2 && <div className={`flex-1 h-0.5 ${isPast ? 'bg-violet-300' : 'bg-gray-100'}`} />}
+                {i < 2 && <div className={`flex-1 h-0.5 ${isPast ? 'bg-red-300' : 'bg-gray-100'}`} />}
               </div>
             )
           })}
@@ -197,7 +197,7 @@ export default function ModalCompra({ rifa, numerosSelecionados, onClose, onSucc
       {/* Order summary */}
       {step !== 'sucesso' && (
         <div className="mx-5 mb-3">
-          <div className={`rounded-xl p-3 ${promoAtiva ? 'bg-emerald-50 border border-emerald-200' : 'bg-violet-50'}`}>
+          <div className={`rounded-xl p-3 ${promoAtiva ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50'}`}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold text-gray-600">
                 {numerosSelecionados.length} número{numerosSelecionados.length > 1 ? 's' : ''}
@@ -211,16 +211,16 @@ export default function ModalCompra({ rifa, numerosSelecionados, onClose, onSucc
             </div>
             <div className="flex flex-wrap gap-1 mb-2">
               {numerosSelecionados.slice(0, 20).map((n) => (
-                <span key={n} className={`text-white text-xs font-bold px-2 py-0.5 rounded-lg ${promoAtiva ? 'bg-emerald-600' : 'bg-violet-600'}`}>
+                <span key={n} className={`text-white text-xs font-bold px-2 py-0.5 rounded-lg ${promoAtiva ? 'bg-emerald-600' : 'bg-red-600'}`}>
                   {String(n).padStart(digits, '0')}
                 </span>
               ))}
               {numerosSelecionados.length > 20 && (
-                <span className="text-violet-600 text-xs font-semibold">+{numerosSelecionados.length - 20}</span>
+                <span className="text-red-600 text-xs font-semibold">+{numerosSelecionados.length - 20}</span>
               )}
             </div>
             <div className="flex items-end gap-2">
-              <p className={`font-black text-lg ${promoAtiva ? 'text-emerald-700' : 'text-violet-700'}`}>
+              <p className={`font-black text-lg ${promoAtiva ? 'text-emerald-700' : 'text-red-700'}`}>
                 {formatCurrency(total)}
               </p>
               {promoAtiva && economia > 0 && (
@@ -289,7 +289,7 @@ export default function ModalCompra({ rifa, numerosSelecionados, onClose, onSucc
               <p className="flex-1 font-mono text-sm text-gray-900 break-all">{rifa.chave_pix}</p>
               <button
                 onClick={copyPix}
-                className="flex-shrink-0 p-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
+                className="flex-shrink-0 p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 <Copy size={14} />
               </button>
@@ -317,11 +317,11 @@ export default function ModalCompra({ rifa, numerosSelecionados, onClose, onSucc
           </p>
 
           <label className="block cursor-pointer">
-            <div className={`border-2 border-dashed rounded-2xl p-6 text-center transition-colors ${comprovantePreview ? 'border-violet-300 bg-violet-50' : 'border-gray-200 hover:border-violet-300 hover:bg-violet-50'}`}>
+            <div className={`border-2 border-dashed rounded-2xl p-6 text-center transition-colors ${comprovantePreview ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-red-300 hover:bg-red-50'}`}>
               {comprovantePreview ? (
                 <div className="relative">
                   <img src={comprovantePreview} alt="Comprovante" className="max-h-40 mx-auto rounded-xl object-contain" />
-                  <div className="mt-2 flex items-center justify-center gap-1 text-violet-600 text-sm font-medium">
+                  <div className="mt-2 flex items-center justify-center gap-1 text-red-600 text-sm font-medium">
                     <CheckCircle size={16} />
                     Comprovante selecionado
                   </div>
@@ -358,7 +358,7 @@ export default function ModalCompra({ rifa, numerosSelecionados, onClose, onSucc
             <p className="text-xs text-gray-500 mb-1">Seus números</p>
             <div className="flex flex-wrap justify-center gap-1">
               {numerosSelecionados.map((n) => (
-                <span key={n} className="bg-violet-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                <span key={n} className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
                   {String(n).padStart(digits, '0')}
                 </span>
               ))}
