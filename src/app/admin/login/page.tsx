@@ -5,11 +5,9 @@ import { createClient } from '@/lib/supabase/client'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { Ticket, Lock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 export default function AdminLoginPage() {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({ email: '', password: '' })
 
@@ -29,8 +27,8 @@ export default function AdminLoginPage() {
         return
       }
 
-      router.push('/admin')
-      router.refresh()
+      // Full page navigation ensures proxy reads fresh session cookies
+      window.location.href = '/admin'
     } catch {
       toast.error('Erro ao fazer login')
     } finally {
