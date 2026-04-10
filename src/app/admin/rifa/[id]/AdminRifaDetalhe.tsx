@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, DollarSign, CheckCircle, XCircle,
   ExternalLink, Trophy, Calendar, Hash, Eye, EyeOff,
-  RefreshCw, PlusCircle, X as XIcon, Pencil,
+  RefreshCw, PlusCircle, X as XIcon, Pencil, Search,
 } from 'lucide-react'
 import Link from 'next/link'
 import Modal from '@/components/ui/Modal'
@@ -51,6 +51,8 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
   const [modalReserva, setModalReserva] = useState(false)
   const [formReserva, setFormReserva] = useState({ nome: '', telefone: '', email: '' })
   const [loadingReserva, setLoadingReserva] = useState(false)
+  const [loadingFederal, setLoadingFederal] = useState(false)
+  const [resultadoFederalInfo, setResultadoFederalInfo] = useState<{ concurso: number; data: string } | null>(null)
 
   const vendidos = numerosState.filter((n) => n.status === 'pago').length
   const reservados = numerosState.filter((n) => n.status === 'reservado').length
@@ -247,6 +249,22 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
       toast.error('Erro ao cancelar reserva')
     } finally {
       setLoadingId(null)
+    }
+  }
+
+  async function buscarResultadoFederal() {
+    setLoadingFederal(true)
+    try {
+      const res = await fetch('/api/federal')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erro ao buscar')
+      setResultadoFederal(data.primeiro_premio)
+      setResultadoFederalInfo({ concurso: data.concurso, data: data.data })
+      toast.success(`Resultado do concurso ${data.concurso} carregado`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Não foi possível buscar o resultado')
+    } finally {
+      setLoadingFederal(false)
     }
   }
 
@@ -626,13 +644,31 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
       <Modal isOpen={modalSorteio} title="Registrar Sorteio" onClose={() => setModalSorteio(false)}>
         <div className="p-5 space-y-4">
           <p className="text-sm text-gray-600">
-            Informe o resultado da Loteria Federal. O número sorteado será calculado automaticamente.
+            Busque o resultado da Loteria Federal ou informe manualmente. O número sorteado será calculado automaticamente.
           </p>
+
+          <button
+            onClick={buscarResultadoFederal}
+            disabled={loadingFederal}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-800 text-white font-semibold text-sm hover:from-red-700 hover:to-red-900 transition-all disabled:opacity-60"
+          >
+            {loadingFederal
+              ? <><RefreshCw size={16} className="animate-spin" /> Buscando resultado...</>
+              : <><Search size={16} /> Buscar resultado da Federal hoje</>
+            }
+          </button>
+
+          {resultadoFederalInfo && (
+            <p className="text-xs text-center text-gray-500">
+              Concurso <strong>{resultadoFederalInfo.concurso}</strong> · {resultadoFederalInfo.data}
+            </p>
+          )}
+
           <Input
-            label="Resultado da Federal (1º prêmio)"
+            label="1º Prêmio da Federal"
             placeholder="Ex: 12345"
             value={resultadoFederal}
-            onChange={(e) => setResultadoFederal(e.target.value)}
+            onChange={(e) => { setResultadoFederal(e.target.value); setResultadoFederalInfo(null) }}
             hint="Os 2 últimos dígitos determinam o número sorteado"
           />
           {resultadoFederal && (
