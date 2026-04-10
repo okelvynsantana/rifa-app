@@ -1,6 +1,4 @@
-import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import AdminNav from './AdminNav'
 
 export default async function AdminLayout({
@@ -8,21 +6,15 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') || ''
-
-  // Skip auth check for login page — middleware handles the redirect
-  if (pathname === '/admin/login') {
-    return <>{children}</>
-  }
-
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Unauthenticated: proxy already redirected, but if we get here
+  // (e.g. login page), just render children without the nav
   if (!user) {
-    redirect('/admin/login')
+    return <>{children}</>
   }
 
   return (
