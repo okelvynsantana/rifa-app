@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, DollarSign, CheckCircle, XCircle,
   ExternalLink, Trophy, Calendar, Hash, Eye, EyeOff,
-  RefreshCw, PlusCircle, X as XIcon,
+  RefreshCw, PlusCircle, X as XIcon, Pencil, Search,
 } from 'lucide-react'
 import Link from 'next/link'
 import Modal from '@/components/ui/Modal'
@@ -51,6 +51,8 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
   const [modalReserva, setModalReserva] = useState(false)
   const [formReserva, setFormReserva] = useState({ nome: '', telefone: '', email: '' })
   const [loadingReserva, setLoadingReserva] = useState(false)
+  const [loadingFederal, setLoadingFederal] = useState(false)
+  const [resultadoFederalInfo, setResultadoFederalInfo] = useState<{ concurso: number; data: string } | null>(null)
 
   const vendidos = numerosState.filter((n) => n.status === 'pago').length
   const reservados = numerosState.filter((n) => n.status === 'reservado').length
@@ -250,6 +252,22 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
     }
   }
 
+  async function buscarResultadoFederal() {
+    setLoadingFederal(true)
+    try {
+      const res = await fetch('/api/federal')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erro ao buscar')
+      setResultadoFederal(data.primeiro_premio)
+      setResultadoFederalInfo({ concurso: data.concurso, data: data.data })
+      toast.success(`Resultado do concurso ${data.concurso} carregado`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Não foi possível buscar o resultado')
+    } finally {
+      setLoadingFederal(false)
+    }
+  }
+
   async function realizarSorteio() {
     if (!resultadoFederal.trim()) { toast.error('Informe o resultado da Federal'); return }
 
@@ -316,7 +334,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
         </div>
 
         <div className="h-2 bg-gray-100 rounded-full mb-3 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-red-500 to-red-500 rounded-full" style={{ width: `${progresso}%` }} />
+          <div className="h-full bg-gradient-to-r from-red-500 to-red-700 rounded-full" style={{ width: `${progresso}%` }} />
         </div>
 
         <div className="grid grid-cols-4 gap-2 text-center mb-4">
@@ -334,7 +352,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
         </div>
 
         {rifa.status === 'sorteada' && rifa.numero_sorteado && (
-          <div className="bg-gradient-to-r from-red-600 to-red-600 rounded-xl p-3 text-white mb-3">
+          <div className="bg-gradient-to-r from-red-700 to-red-900 rounded-xl p-3 text-white mb-3">
             <p className="text-red-200 text-xs">🏆 Número Sorteado</p>
             <p className="text-3xl font-black">{String(rifa.numero_sorteado).padStart(digits, '0')}</p>
             {rifa.resultado_federal && <p className="text-red-200 text-xs mt-1">Federal: {rifa.resultado_federal}</p>}
@@ -589,6 +607,12 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
       {/* Tab: Config */}
       {tab === 'config' && (
         <div className="space-y-3">
+          <Link href={`/admin/rifa/${rifa.id}/editar`}>
+            <Button variant="outline" size="sm" className="w-full">
+              <Pencil size={14} className="mr-2" /> Editar informações da rifa
+            </Button>
+          </Link>
+
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50">
             {[
               { icon: Hash, label: 'Total de números', value: rifa.total_numeros },
@@ -620,13 +644,31 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
       <Modal isOpen={modalSorteio} title="Registrar Sorteio" onClose={() => setModalSorteio(false)}>
         <div className="p-5 space-y-4">
           <p className="text-sm text-gray-600">
-            Informe o resultado da Loteria Federal. O número sorteado será calculado automaticamente.
+            Busque o resultado da Loteria Federal ou informe manualmente. O número sorteado será calculado automaticamente.
           </p>
+
+          <button
+            onClick={buscarResultadoFederal}
+            disabled={loadingFederal}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-800 text-white font-semibold text-sm hover:from-red-700 hover:to-red-900 transition-all disabled:opacity-60"
+          >
+            {loadingFederal
+              ? <><RefreshCw size={16} className="animate-spin" /> Buscando resultado...</>
+              : <><Search size={16} /> Buscar resultado da Federal hoje</>
+            }
+          </button>
+
+          {resultadoFederalInfo && (
+            <p className="text-xs text-center text-gray-500">
+              Concurso <strong>{resultadoFederalInfo.concurso}</strong> · {resultadoFederalInfo.data}
+            </p>
+          )}
+
           <Input
-            label="Resultado da Federal (1º prêmio)"
+            label="1º Prêmio da Federal"
             placeholder="Ex: 12345"
             value={resultadoFederal}
-            onChange={(e) => setResultadoFederal(e.target.value)}
+            onChange={(e) => { setResultadoFederal(e.target.value); setResultadoFederalInfo(null) }}
             hint="Os 2 últimos dígitos determinam o número sorteado"
           />
           {resultadoFederal && (

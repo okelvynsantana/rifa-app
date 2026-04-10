@@ -83,7 +83,7 @@ export default function RifaCard({ rifa, numerosVendidos = 0 }: RifaCardProps) {
           <div className="mb-3">
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-red-500 to-red-500 rounded-full transition-all"
+                className="h-full bg-gradient-to-r from-red-500 to-red-700 rounded-full transition-all"
                 style={{ width: `${progresso}%` }}
               />
             </div>
