@@ -9,9 +9,9 @@ import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import {
-  ArrowLeft, Users, DollarSign, CheckCircle, XCircle,
+  ArrowLeft, DollarSign, CheckCircle, XCircle,
   ExternalLink, Trophy, Calendar, Hash, Eye, EyeOff,
-  RefreshCw
+  RefreshCw, PlusCircle, X as XIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import Modal from '@/components/ui/Modal'
@@ -32,9 +32,10 @@ const pedidoStatusBadge = {
   cancelado: { label: 'Cancelado', variant: 'danger' as const },
 }
 
-export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: initialPedidos }: Props) {
+export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNumeros, pedidos: initialPedidos }: Props) {
   const router = useRouter()
   const [rifa, setRifa] = useState(initialRifa)
+  const [numerosState, setNumerosState] = useState(initialNumeros)
   const [pedidos, setPedidos] = useState(initialPedidos)
   const [tab, setTab] = useState<Tab>('pedidos')
   const [loadingId, setLoadingId] = useState<string | null>(null)
@@ -44,27 +45,64 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
   const [filtroStatus, setFiltroStatus] = useState<string>('todos')
   const [showNums, setShowNums] = useState(false)
 
-  const vendidos = numeros.filter((n) => n.status === 'pago').length
-  const reservados = numeros.filter((n) => n.status === 'reservado').length
-  const disponiveis = numeros.filter((n) => n.status === 'disponivel').length
+  // Reservation mode
+  const [modoReserva, setModoReserva] = useState(false)
+  const [selecionados, setSelecionados] = useState<Set<number>>(new Set())
+  const [modalReserva, setModalReserva] = useState(false)
+  const [formReserva, setFormReserva] = useState({ nome: '', telefone: '', email: '' })
+  const [loadingReserva, setLoadingReserva] = useState(false)
+
+  const vendidos = numerosState.filter((n) => n.status === 'pago').length
+  const reservados = numerosState.filter((n) => n.status === 'reservado').length
+  const disponiveis = numerosState.filter((n) => n.status === 'disponivel').length
   const arrecadado = pedidos.filter((p) => p.status === 'confirmado').reduce((a, p) => a + p.valor_total, 0)
   const progresso = Math.round(((vendidos + reservados) / rifa.total_numeros) * 100)
 
   const digits = String(rifa.total_numeros).length
+
+  const precoReserva = (() => {
+    const qty = selecionados.size
+    if (rifa.preco_promocional && rifa.min_numeros_promocao && qty >= rifa.min_numeros_promocao) {
+      return rifa.preco_promocional
+    }
+    return rifa.preco_numero
+  })()
+
+  function toggleModoReserva() {
+    setModoReserva((v) => !v)
+    setSelecionados(new Set())
+  }
+
+  function handleNumeroClick(n: NumeroRifa) {
+    if (modoReserva && n.status === 'disponivel') {
+      setSelecionados((prev) => {
+        const next = new Set(prev)
+        if (next.has(n.numero)) next.delete(n.numero)
+        else next.add(n.numero)
+        return next
+      })
+    } else {
+      setModalNumero(n)
+    }
+  }
 
   async function confirmarPedido(pedidoId: string) {
     setLoadingId(pedidoId)
     try {
       const supabase = createClient()
       const pedido = pedidos.find((p) => p.id === pedidoId)!
+      const now = new Date().toISOString()
 
       await supabase.from('pedidos').update({ status: 'confirmado' }).eq('id', pedidoId)
       await supabase.from('numeros_rifa')
-        .update({ status: 'pago', paid_at: new Date().toISOString() })
+        .update({ status: 'pago', paid_at: now })
         .eq('rifa_id', rifa.id)
         .in('numero', pedido.numeros)
 
       setPedidos((prev) => prev.map((p) => p.id === pedidoId ? { ...p, status: 'confirmado' } : p))
+      setNumerosState((prev) => prev.map((n) =>
+        pedido.numeros.includes(n.numero) ? { ...n, status: 'pago', paid_at: now } : n
+      ))
       toast.success('Pedido confirmado!')
     } catch {
       toast.error('Erro ao confirmar pedido')
@@ -86,9 +124,127 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
         .in('numero', pedido.numeros)
 
       setPedidos((prev) => prev.map((p) => p.id === pedidoId ? { ...p, status: 'cancelado' } : p))
+      setNumerosState((prev) => prev.map((n) =>
+        pedido.numeros.includes(n.numero)
+          ? { ...n, status: 'disponivel', comprador_nome: null, comprador_telefone: null, comprador_email: null }
+          : n
+      ))
       toast.success('Pedido cancelado')
     } catch {
       toast.error('Erro ao cancelar pedido')
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  async function reservarNumeros(confirmar: boolean) {
+    if (!formReserva.nome.trim() || !formReserva.telefone.trim()) {
+      toast.error('Nome e telefone são obrigatórios')
+      return
+    }
+    setLoadingReserva(true)
+    try {
+      const supabase = createClient()
+      const nums = Array.from(selecionados)
+      const statusNumero = confirmar ? 'pago' : 'reservado'
+      const valor = nums.length * precoReserva
+      const now = new Date().toISOString()
+
+      const { data: pedido, error: pedidoError } = await supabase
+        .from('pedidos')
+        .insert({
+          rifa_id: rifa.id,
+          comprador_nome: formReserva.nome.trim(),
+          comprador_telefone: formReserva.telefone.trim(),
+          comprador_email: formReserva.email.trim() || null,
+          numeros: nums,
+          valor_total: valor,
+          status: confirmar ? 'confirmado' : 'pendente',
+        })
+        .select()
+        .single()
+
+      if (pedidoError) throw pedidoError
+
+      await supabase
+        .from('numeros_rifa')
+        .update({
+          status: statusNumero,
+          comprador_nome: formReserva.nome.trim(),
+          comprador_telefone: formReserva.telefone.trim(),
+          comprador_email: formReserva.email.trim() || null,
+          reserved_at: now,
+          paid_at: confirmar ? now : null,
+        })
+        .eq('rifa_id', rifa.id)
+        .in('numero', nums)
+
+      setNumerosState((prev) => prev.map((n) =>
+        nums.includes(n.numero)
+          ? {
+              ...n,
+              status: statusNumero,
+              comprador_nome: formReserva.nome.trim(),
+              comprador_telefone: formReserva.telefone.trim(),
+              comprador_email: formReserva.email.trim() || null,
+              reserved_at: now,
+              paid_at: confirmar ? now : null,
+            }
+          : n
+      ))
+      setPedidos((prev) => [pedido, ...prev])
+
+      setSelecionados(new Set())
+      setModoReserva(false)
+      setModalReserva(false)
+      setFormReserva({ nome: '', telefone: '', email: '' })
+      toast.success(confirmar ? `${nums.length} número(s) confirmado(s)!` : `${nums.length} número(s) reservado(s)!`)
+    } catch {
+      toast.error('Erro ao reservar números')
+    } finally {
+      setLoadingReserva(false)
+    }
+  }
+
+  async function confirmarNumero(n: NumeroRifa) {
+    setLoadingId(`num-${n.id}`)
+    try {
+      const supabase = createClient()
+      const now = new Date().toISOString()
+      await supabase.from('numeros_rifa').update({ status: 'pago', paid_at: now }).eq('id', n.id)
+
+      setNumerosState((prev) => prev.map((num) => num.id === n.id ? { ...num, status: 'pago', paid_at: now } : num))
+      setModalNumero((prev) => prev ? { ...prev, status: 'pago', paid_at: now } : null)
+      toast.success('Número confirmado como pago!')
+    } catch {
+      toast.error('Erro ao confirmar número')
+    } finally {
+      setLoadingId(null)
+    }
+  }
+
+  async function cancelarNumeroReserva(n: NumeroRifa) {
+    setLoadingId(`num-${n.id}`)
+    try {
+      const supabase = createClient()
+      await supabase.from('numeros_rifa').update({
+        status: 'disponivel',
+        comprador_nome: null,
+        comprador_telefone: null,
+        comprador_email: null,
+        reserved_at: null,
+        paid_at: null,
+      }).eq('id', n.id)
+
+      setNumerosState((prev) => prev.map((num) =>
+        num.id === n.id
+          ? { ...num, status: 'disponivel', comprador_nome: null, comprador_telefone: null, comprador_email: null, reserved_at: null, paid_at: null }
+          : num
+      ))
+      setModalNumero(null)
+      toast.success('Reserva cancelada')
+    } catch {
+      toast.error('Erro ao cancelar reserva')
     } finally {
       setLoadingId(null)
     }
@@ -99,7 +255,6 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
 
     try {
       const supabase = createClient()
-      // Get last 2 digits of the first prize to find the winning number
       const ultimos = resultadoFederal.replace(/\D/g, '').slice(-2)
       let numeroSorteado = parseInt(ultimos, 10) % rifa.total_numeros
       if (numeroSorteado === 0) numeroSorteado = rifa.total_numeros
@@ -221,7 +376,6 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
       {/* Tab: Pedidos */}
       {tab === 'pedidos' && (
         <div className="space-y-3">
-          {/* Filter */}
           <div className="flex gap-2 overflow-x-auto pb-1">
             {['todos', 'comprovante_enviado', 'pendente', 'confirmado', 'cancelado'].map((s) => (
               <button
@@ -313,15 +467,35 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
       {tab === 'numeros' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">{numeros.length} números no total</p>
-            <button
-              onClick={() => setShowNums(!showNums)}
-              className="flex items-center gap-1 text-xs text-violet-600 font-semibold"
-            >
-              {showNums ? <EyeOff size={14} /> : <Eye size={14} />}
-              {showNums ? 'Ocultar' : 'Mostrar grid'}
-            </button>
+            <p className="text-sm text-gray-600">{numerosState.length} números no total</p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowNums(!showNums)}
+                className="flex items-center gap-1 text-xs text-violet-600 font-semibold"
+              >
+                {showNums ? <EyeOff size={14} /> : <Eye size={14} />}
+                {showNums ? 'Ocultar' : 'Mostrar grid'}
+              </button>
+              {rifa.status === 'ativa' && (
+                <button
+                  onClick={toggleModoReserva}
+                  className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors ${
+                    modoReserva
+                      ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                      : 'bg-violet-100 text-violet-600 hover:bg-violet-200'
+                  }`}
+                >
+                  {modoReserva ? <><XIcon size={13} /> Cancelar</> : <><PlusCircle size={13} /> Reservar</>}
+                </button>
+              )}
+            </div>
           </div>
+
+          {modoReserva && (
+            <div className="bg-violet-50 border border-violet-200 rounded-xl p-3 text-sm text-violet-700">
+              Toque nos números <strong>disponíveis</strong> para selecioná-los. Depois clique em &ldquo;Reservar selecionados&rdquo;.
+            </div>
+          )}
 
           {/* Legend */}
           <div className="flex flex-wrap gap-3 bg-white rounded-xl p-3 border border-gray-100">
@@ -340,27 +514,54 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
           {showNums && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3">
               <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
-                {numeros.map((n) => (
-                  <button
-                    key={n.numero}
-                    onClick={() => setModalNumero(n)}
-                    className={`aspect-square rounded text-xs font-bold flex items-center justify-center transition-all ${
-                      n.status === 'pago' ? 'bg-blue-500 text-white' :
-                      n.status === 'reservado' ? 'bg-amber-400 text-white' :
-                      n.status === 'cancelado' ? 'bg-red-200 text-red-700' :
-                      'bg-gray-100 text-gray-600 hover:bg-violet-100'
-                    }`}
-                  >
-                    {String(n.numero).padStart(digits, '0')}
-                  </button>
-                ))}
+                {numerosState.map((n) => {
+                  const isSel = selecionados.has(n.numero)
+                  return (
+                    <button
+                      key={n.numero}
+                      onClick={() => handleNumeroClick(n)}
+                      className={`aspect-square rounded text-xs font-bold flex items-center justify-center transition-all ${
+                        isSel
+                          ? 'bg-violet-600 text-white scale-105'
+                          : n.status === 'pago'
+                          ? 'bg-blue-500 text-white'
+                          : n.status === 'reservado'
+                          ? 'bg-amber-400 text-white'
+                          : n.status === 'cancelado'
+                          ? 'bg-red-200 text-red-700'
+                          : modoReserva
+                          ? 'bg-gray-100 text-gray-600 hover:bg-violet-100 cursor-pointer'
+                          : 'bg-gray-100 text-gray-600 hover:bg-violet-100'
+                      }`}
+                    >
+                      {String(n.numero).padStart(digits, '0')}
+                    </button>
+                  )
+                })}
               </div>
+            </div>
+          )}
+
+          {/* Action bar when numbers selected */}
+          {modoReserva && selecionados.size > 0 && (
+            <div className="bg-violet-600 rounded-2xl p-4 flex items-center justify-between">
+              <div>
+                <p className="text-white font-bold">{selecionados.size} número(s) selecionado(s)</p>
+                <p className="text-violet-200 text-xs">{formatCurrency(selecionados.size * precoReserva)}</p>
+              </div>
+              <Button
+                size="sm"
+                className="bg-white text-violet-700 hover:bg-violet-50"
+                onClick={() => setModalReserva(true)}
+              >
+                Reservar selecionados
+              </Button>
             </div>
           )}
 
           {/* Números com compradores */}
           <div className="space-y-2">
-            {numeros.filter((n) => n.comprador_nome).map((n) => (
+            {numerosState.filter((n) => n.comprador_nome).map((n) => (
               <div key={n.numero} className="bg-white rounded-xl border border-gray-100 p-3 flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black text-white flex-shrink-0 ${
                   n.status === 'pago' ? 'bg-blue-500' : 'bg-amber-400'
@@ -371,9 +572,14 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
                   <p className="font-semibold text-gray-900 text-sm">{n.comprador_nome}</p>
                   <p className="text-xs text-gray-500">{n.comprador_telefone}</p>
                 </div>
-                <Badge variant={n.status === 'pago' ? 'info' : 'warning'}>
-                  {n.status === 'pago' ? 'Pago' : 'Reservado'}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant={n.status === 'pago' ? 'info' : 'warning'}>
+                    {n.status === 'pago' ? 'Pago' : 'Reservado'}
+                  </Badge>
+                  <button onClick={() => setModalNumero(n)} className="p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+                    <Eye size={14} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -447,6 +653,71 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
         </div>
       </Modal>
 
+      {/* Modal Reserva Admin */}
+      <Modal isOpen={modalReserva} title={`Reservar ${selecionados.size} número(s)`} onClose={() => setModalReserva(false)}>
+        <div className="p-5 space-y-4">
+          <div className="bg-violet-50 rounded-xl p-3">
+            <div className="flex flex-wrap gap-1">
+              {Array.from(selecionados).sort((a, b) => a - b).slice(0, 20).map((n) => (
+                <span key={n} className="bg-violet-200 text-violet-800 text-xs font-bold px-1.5 py-0.5 rounded">
+                  {String(n).padStart(digits, '0')}
+                </span>
+              ))}
+              {selecionados.size > 20 && (
+                <span className="text-violet-600 text-xs font-semibold">+{selecionados.size - 20}</span>
+              )}
+            </div>
+            <p className="text-violet-700 font-black text-sm mt-2">
+              Total: {formatCurrency(selecionados.size * precoReserva)}
+              {rifa.preco_promocional && rifa.min_numeros_promocao && selecionados.size >= rifa.min_numeros_promocao && (
+                <span className="ml-1 text-xs font-semibold text-emerald-600">(preço promocional)</span>
+              )}
+            </p>
+          </div>
+
+          <Input
+            label="Nome do comprador"
+            placeholder="Nome completo"
+            value={formReserva.nome}
+            onChange={(e) => setFormReserva({ ...formReserva, nome: e.target.value })}
+            required
+          />
+          <Input
+            label="Telefone / WhatsApp"
+            placeholder="(11) 99999-9999"
+            type="tel"
+            value={formReserva.telefone}
+            onChange={(e) => setFormReserva({ ...formReserva, telefone: e.target.value })}
+            required
+          />
+          <Input
+            label="E-mail (opcional)"
+            placeholder="email@exemplo.com"
+            type="email"
+            value={formReserva.email}
+            onChange={(e) => setFormReserva({ ...formReserva, email: e.target.value })}
+          />
+
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="flex-1"
+              disabled={loadingReserva}
+              onClick={() => reservarNumeros(false)}
+            >
+              {loadingReserva ? <RefreshCw size={16} className="animate-spin mx-auto" /> : 'Reservar'}
+            </Button>
+            <Button
+              className="flex-1"
+              disabled={loadingReserva}
+              onClick={() => reservarNumeros(true)}
+            >
+              {loadingReserva ? <RefreshCw size={16} className="animate-spin mx-auto" /> : 'Reservar e Confirmar'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Modal Número detalhe */}
       {modalNumero && (
         <Modal isOpen title={`Número ${String(modalNumero.numero).padStart(digits, '0')}`} onClose={() => setModalNumero(null)} size="sm">
@@ -463,8 +734,11 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
               }`}>
                 {String(modalNumero.numero).padStart(digits, '0')}
               </p>
-              <Badge variant={modalNumero.status === 'pago' ? 'info' : 'warning'} className="mt-2">
-                {modalNumero.status === 'pago' ? 'Pago' : 'Reservado'}
+              <Badge
+                variant={modalNumero.status === 'pago' ? 'info' : modalNumero.status === 'reservado' ? 'warning' : 'default'}
+                className="mt-2"
+              >
+                {modalNumero.status === 'pago' ? 'Pago' : modalNumero.status === 'reservado' ? 'Reservado' : 'Disponível'}
               </Badge>
             </div>
 
@@ -482,6 +756,29 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros, pedidos: 
                   <Eye size={14} className="mr-1" /> Ver comprovante
                 </Button>
               </a>
+            )}
+
+            {/* Actions for reserved numbers */}
+            {modalNumero.status === 'reservado' && (
+              <div className="flex gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+                  disabled={loadingId === `num-${modalNumero.id}`}
+                  onClick={() => cancelarNumeroReserva(modalNumero)}
+                >
+                  {loadingId === `num-${modalNumero.id}` ? <RefreshCw size={14} className="animate-spin mx-auto" /> : 'Cancelar reserva'}
+                </Button>
+                <Button
+                  size="sm"
+                  className="flex-1"
+                  disabled={loadingId === `num-${modalNumero.id}`}
+                  onClick={() => confirmarNumero(modalNumero)}
+                >
+                  {loadingId === `num-${modalNumero.id}` ? <RefreshCw size={14} className="animate-spin mx-auto" /> : 'Confirmar pagamento'}
+                </Button>
+              </div>
             )}
           </div>
         </Modal>
