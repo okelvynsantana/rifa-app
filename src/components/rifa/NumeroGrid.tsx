@@ -39,7 +39,7 @@ export default function NumeroGrid({
               isOcupado && status === 'pago' && 'bg-blue-500 text-white cursor-not-allowed opacity-80',
               isOcupado && status === 'reservado' && 'bg-amber-400 text-white cursor-not-allowed opacity-80',
               !isOcupado && isSelecionado && 'bg-red-600 text-white shadow-md shadow-red-500/30 scale-105 focus:ring-red-500 border-2 border-red-600',
-              !isOcupado && !isSelecionado && 'bg-white border-2 border-gray-200 text-gray-600 hover:border-red-400 hover:bg-red-50 hover:text-red-600 active:scale-95 focus:ring-red-300',
+              !isOcupado && !isSelecionado && 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-400 active:scale-95 focus:ring-emerald-300',
             )}
           >
             {String(num).padStart(digits, '0')}

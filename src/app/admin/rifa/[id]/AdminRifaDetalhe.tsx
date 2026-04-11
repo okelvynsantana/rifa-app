@@ -518,7 +518,7 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
           {/* Legend */}
           <div className="flex flex-wrap gap-3 bg-white rounded-xl p-3 border border-gray-100">
             {[
-              { color: 'bg-white border-2 border-gray-200', label: `Disponível (${disponiveis})` },
+              { color: 'bg-emerald-50 border-2 border-emerald-300', label: `Disponível (${disponiveis})` },
               { color: 'bg-amber-400', label: `Reservado (${reservados})` },
               { color: 'bg-blue-500', label: `Pago (${vendidos})` },
             ].map((l) => (
@@ -548,8 +548,8 @@ export default function AdminRifaDetalhe({ rifa: initialRifa, numeros: initialNu
                           : n.status === 'cancelado'
                           ? 'bg-red-200 text-red-700'
                           : modoReserva
-                          ? 'bg-white border-2 border-gray-200 text-gray-600 hover:border-red-400 hover:bg-red-50 cursor-pointer'
-                          : 'bg-white border-2 border-gray-200 text-gray-600 hover:border-red-400 hover:bg-red-50'
+                          ? 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100 cursor-pointer'
+                          : 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
                       }`}
                     >
                       {String(n.numero).padStart(digits, '0')}
